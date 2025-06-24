@@ -5,15 +5,21 @@ from aiogram.filters import CommandStart
 from app.states import HrWait
 from aiogram.fsm.context import FSMContext
 from config import HR_ID
+from app.db import db
 
 
 user = Router()
 
 @user.message(CommandStart())
 async def cmd_start(message: Message, bot: Bot):
-    await message.answer("Приветсвтую, я бот-помощник HR отдела компании ЦИТ-БАРС", reply_markup=kb.faq)
-    await message.answer(message.from_user.id)
-    await message.reply("Annchih")
+    faqs = db.get_all_faqs()
+    keyboard = kb.faq_keyboard(faqs)
+    await message.answer(
+        "Приветсвтую, я бот-помощник HR отдела компании ЦИТ-БАРС",
+        reply_markup=keyboard
+    )
+
+
 
 @user.callback_query(F.data=='place')
 async def place(callback: CallbackQuery):
@@ -43,3 +49,11 @@ async def forward_to_hr(message: Message, state: FSMContext):
     await message.bot.send_message(HR_ID,text)
     await message.answer("Готово! HR скоро ответит😉")
     await state.clear()   
+
+
+@user.callback_query(F.data.startswith("faq_"))
+async def handle_faq_callback(callback: CallbackQuery):
+    faq_id = int(callback.data.split("_")[1])
+    question, answer = db.get_faq_by_id(faq_id)
+    await callback.message.answer(f"<b>{question}</b> \n\n 💬{answer}", parse_mode="HTML")
+    await callback.answer()
