@@ -6,6 +6,7 @@ def faq_keyboard(faqs):
         [InlineKeyboardButton(text='Где мы находимся?', callback_data='place')],
         [InlineKeyboardButton(text='Не смогли найти вход? Как нас найти?', callback_data='office')],
         [InlineKeyboardButton(text='Другой вопрос? Задать вопрос HR', callback_data='ask_hr')],
+        [InlineKeyboardButton(text='Как оформить документ выхода на отпуск?',callback_data = 'chill')],
     ]
 
 
@@ -17,3 +18,8 @@ def faq_keyboard(faqs):
             ])
 
     return InlineKeyboardMarkup(inline_keyboard=static_faq)
+
+
+sub = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Подписаться')]
+])

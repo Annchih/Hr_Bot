@@ -4,6 +4,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart
 from app.states import HrWait
 from aiogram.fsm.context import FSMContext
+from aiogram.types import FSInputFile
 from config import HR_ID
 from app.db import db
 
@@ -18,8 +19,7 @@ async def cmd_start(message: Message, bot: Bot):
         "Приветсвтую, я бот-помощник HR отдела компании ЦИТ-БАРС",
         reply_markup=keyboard
     )
-
-
+    # await message.answer(f"ID: {message.from_user.id}") для того чтобы узнать id hr и для админов
 
 @user.callback_query(F.data=='place')
 async def place(callback: CallbackQuery):
@@ -56,4 +56,10 @@ async def handle_faq_callback(callback: CallbackQuery):
     faq_id = int(callback.data.split("_")[1])
     question, answer = db.get_faq_by_id(faq_id)
     await callback.message.answer(f"<b>{question}</b> \n\n 💬{answer}", parse_mode="HTML")
+    await callback.answer()
+
+@user.callback_query(F.data=='chill')
+async def chill(callback: CallbackQuery):
+    file = FSInputFile("files/Основной отпуск.docx")
+    await callback.message.answer_document(document=file)
     await callback.answer()
