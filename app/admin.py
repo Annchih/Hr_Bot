@@ -37,7 +37,7 @@ async def add_answer(message: Message, state: FSMContext):
     await message.answer("Вопрос с ответом успешно добавлены в FAQ!")
     await state.clear()
 
-@admin.callback_query(F.data.startswith("faq_"))
+@admin.callback_query(Admin(), F.data.startswith("faq_"))
 async def handle_faq(callback: CallbackQuery):
     faq_id = int(callback.data.split("_")[1])
     question, answer = db.get_faq_by_id(faq_id)
