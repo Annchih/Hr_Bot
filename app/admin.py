@@ -2,7 +2,7 @@ from aiogram import Router,F
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Filter, Command
 from aiogram.fsm.context import FSMContext
-from config import ADMINS
+from config import ADMINS, HR_ID
 from app.states import AddStates, EditStates, DeleteStates
 from aiogram.types import BotCommand, BotCommandScopeChatAdministrators
 from app.db import FAQManager
@@ -15,9 +15,13 @@ db = FAQManager()
 class Admin(Filter):
     async def __call__(self, message:Message):
         return message.from_user.id in ADMINS
+
+class HR(Filter):
+    async def __call__(self, message: Message) -> bool:
+        return message.from_user.id == HR_ID or message.from_user.id in ADMINS
     
 
-@admin.message(Admin(), Command('add_question'))
+@admin.message(Admin() or HR(), Command('add_question'))
 async def add_question_start(message: Message, state: FSMContext):
     await message.answer("Введи текст нового вопроса:")
     await state.set_state(AddStates.add)
@@ -37,7 +41,7 @@ async def add_answer(message: Message, state: FSMContext):
     await message.answer("Вопрос с ответом успешно добавлены в FAQ!")
     await state.clear()
 
-@admin.callback_query(Admin(), F.data.startswith("faq_"))
+@admin.callback_query(Admin() or HR(), F.data.startswith("faq_"))
 async def handle_faq(callback: CallbackQuery):
     faq_id = int(callback.data.split("_")[1])
     question, answer = db.get_faq_by_id(faq_id)
@@ -45,7 +49,7 @@ async def handle_faq(callback: CallbackQuery):
     await callback.answer()
 
 
-@admin.message(Admin(),Command("edit_question"))
+@admin.message(Admin() or HR(),Command("edit_question"))
 async def edit_question(message: Message, state: FSMContext):
     await message.answer("✏️ Введи текст вопроса, который хочешь изменить:")
     await state.set_state(EditStates.old_question)
@@ -79,7 +83,7 @@ async def get_new_answer(message: Message, state: FSMContext):
 
     await state.clear()
 
-@admin.message(Admin(),Command("delete_question"))
+@admin.message(Admin() or HR(),Command("delete_question"))
 async def delete_question(message: Message, state: FSMContext):
     await message.answer("Введи текст вопроса, который хочешь удалить:")
     await state.set_state(DeleteStates.delete)

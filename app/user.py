@@ -19,7 +19,7 @@ async def cmd_start(message: Message, bot: Bot):
         "Приветсвтую, я бот-помощник HR отдела компании ЦИТ-БАРС",
         reply_markup=keyboard
     )
-    # await message.answer(f"ID: {message.from_user.id}") для того чтобы узнать id hr и для админов
+    # await message.answer(f"ID: {message.from_user.id}") для нахождения id hr-у и админу
 
 @user.callback_query(F.data=='place')
 async def place(callback: CallbackQuery):
