@@ -4,7 +4,6 @@ from aiogram.filters import Filter, Command
 from aiogram.fsm.context import FSMContext
 from config import ADMINS, HR_ID
 from app.states import AddStates, EditStates, DeleteStates
-from aiogram.types import BotCommand, BotCommandScopeChatAdministrators
 from app.db import FAQManager
 
 
